@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title></title>
+<link id="favicon" rel="icon" type="image/png" href="icon.png">
+<style>
+  @font-face {
+    font-family: 'MinecraftRegular-Bmg3.otf';
+    src: url('MinecraftRegular-Bmg3.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+  }
+
+  :root {
+    --main-font: 'MinecraftRegular-Bmg3.otf', sans-serif;
+  }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    background-color: black;
+    overflow: hidden;
+    font-family: var(--main-font);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+  }
+
+  *, button, img {
+    cursor: none !important;
+  }
+
+  #customCursor {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 40px;
+    height: 40px;
+    pointer-events: none;
+    background: url('1557.png') no-repeat center center;
+    background-size: contain;
+    transform: translate(-50%, -50%);
+    z-index: 2000;
+  }
+
+  #overlay {
+    position: fixed;
+    top:0; left:0;
+    width:100%; height:100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    font-size: 2rem;
+    font-weight: bold;
+    color: #ffffff;
+    text-transform: uppercase;
+    user-select: none;
+    background: transparent;
+    opacity: 1;
+    transition: opacity 0.8s ease;
+  }
+
+  #overlay.hidden {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  #mainContent {
+    display: none;
+    text-align: center;
+    position: relative;
+  }
+
+  @keyframes swing {
+    0% { transform: rotate(-15deg); }
+    50% { transform: rotate(15deg); }
+    100% { transform: rotate(-15deg); }
+  }
+
+  #girlContainer {
+    display: inline-block;
+    transform-origin: top center;
+    animation: swing 2s ease-in-out infinite;
+  }
+
+  #girl {
+    width: 250px;
+    height: auto;
+  }
+
+  .socialButtons {
+    margin-top: 40px;
+    display: flex;
+    justify-content: center;
+    gap: 25px;
+  }
+
+  .socialButton {
+    width: 60px;
+    height: 60px;
+    transition: transform 0.2s ease;
+  }
+  .socialButton:hover { transform: scale(1.2); }
+
+  .bioText {
+    margin-top: 20px;
+    font-size: 1.2rem;
+    color: #ffffff;
+    min-height: 1.5em;
+  }
+</style>
+</head>
+<body>
+
+<div id="customCursor"></div>
+
+<audio id="bgMusic" loop>
+  <source src="poison - jaydes.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+<div id="overlay">Hi</div>
+
+<div id="mainContent">
+  <div id="girlContainer">
+    <img id="girl" src="pic.png" alt="Hanging Anime Girl">
+  </div>
+  <div class="socialButtons">
+    <img class="socialButton" src="Roblox_Logo.svg.png" alt="Social 1" onclick="window.open('https://www.roblox.com/users/2216605442/profile','_blank')">
+    <img class="socialButton" src="Logo9.png" alt="Social 2" onclick="window.open('https://t.me/injuvie','_blank')">
+    <img class="socialButton" src="897d525901bd2ef6523ba990289204ec.png" alt="Social 3" onclick="window.open('https://discord.gg/bpGUqYWYNE','_blank')">
+  </div>
+  <div class="bioText" id="bioText"></div>
+</div>
+
+<script>
+const overlay = document.getElementById('overlay');
+const mainContent = document.getElementById('mainContent');
+const bgMusic = document.getElementById('bgMusic');
+
+// Disable right-click
+document.addEventListener('contextmenu', e => {
+  e.preventDefault();
+  alert('Right-click is disabled!');
+});
+
+overlay.addEventListener('click', () => {
+  overlay.classList.add('hidden'); 
+  setTimeout(() => {
+    overlay.style.display = 'none';
+    mainContent.style.display = 'block';
+    bgMusic.play().catch(() => console.log("Autoplay blocked"));
+    startBioTyping();
+  }, 800);
+});
+
+// Ctrl+Shift+I or F12 detection
+document.addEventListener('keydown', function(e) {
+  if ((e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'i') || e.key === 'F12') {
+    alert('dumbass');
+  }
+});
+
+// Dev tools detection
+let devToolsOpen = false;
+setInterval(function() {
+  const widthThreshold = window.outerWidth - window.innerWidth > 100;
+  const heightThreshold = window.outerHeight - window.innerHeight > 100;
+  if ((widthThreshold || heightThreshold) && !devToolsOpen) {
+    devToolsOpen = true;
+    alert('skid detected!');
+    window.location.href = 'about:blank';
+  }
+}, 500);
+
+// Tab title typing/deleting effect
+const titleText = "river";
+let index = 0;
+let deleting = false;
+function animateTitle() {
+  if (!deleting) {
+    document.title = titleText.slice(0, index + 1);
+    index++;
+    if(index === titleText.length) {
+      deleting = true;
+      setTimeout(animateTitle, 1000);
+      return;
+    }
+  } else {
+    document.title = titleText.slice(0, index - 1);
+    index--;
+    if(index === 0) deleting = false;
+  }
+  setTimeout(animateTitle, deleting ? 200 : 150);
+}
+animateTitle();
+
+// Dynamic favicon change
+function changeFavicon(src) {
+  document.getElementById('favicon').href = src;
+}
+
+// Bio typing multiple messages
+const bioText = document.getElementById('bioText');
+const bioContents = [
+  "hello!",
+  "website still in development",
+  "check my links:D"
+];
+
+let currentBio = 0;
+let bioIndex = 0;
+let bioDeleting = false;
+
+function startBioTyping() {
+  bioIndex = 0;
+  bioDeleting = false;
+  typeNext();
+}
+
+function typeNext() {
+  const text = bioContents[currentBio];
+  if (!bioDeleting) {
+    bioText.textContent = text.slice(0, bioIndex + 1);
+    bioIndex++;
+    if (bioIndex === text.length) {
+      bioDeleting = true;
+      setTimeout(typeNext, 1000);
+      return;
+    }
+  } else {
+    bioText.textContent = text.slice(0, bioIndex - 1);
+    bioIndex--;
+    if (bioIndex === 0) {
+      bioDeleting = false;
+      currentBio = (currentBio + 1) % bioContents.length;
+    }
+  }
+  setTimeout(typeNext, bioDeleting ? 150 : 100);
+}
+
+// Custom cursor smooth animation
+const customCursor = document.getElementById('customCursor');
+let mouseX = window.innerWidth / 2;
+let mouseY = window.innerHeight / 2;
+let posX = mouseX;
+let posY = mouseY;
+
+window.addEventListener('mousemove', e => {
+  mouseX = e.clientX;
+  mouseY = e.clientY;
+});
+
+function animateCursor() {
+  const speed = 0.2;
+  posX += (mouseX - posX) * speed;
+  posY += (mouseY - posY) * speed;
+  customCursor.style.transform = `translate(${posX}px, ${posY}px) translate(-50%, -50%)`;
+  requestAnimationFrame(animateCursor);
+}
+animateCursor();
+</script>
+
+</body>
+</html>
